@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Fragment } from 'react'
 import { Provider, Subscribe } from 'unstated'
 
 import styled from 'styled-components'
@@ -14,11 +14,21 @@ function App () {
       <Wrapper>
         <Subscribe to={[TodosContainer]}>
           {todos => {
-            const list = todos.getList()
+            console.log(todos, 'todos');
+            const lists = todos.getList()
             return (
               <TodosWrapper>
-                <AddTodo onAddTodo={todos.createTodo} />
-                <TodoList items={list} toggleComplete={todos.toggleComplete} />
+                <AddTodo placeholder='Add new list...' onAdd={todos.createList} />
+                { lists.map((list, index) =>{
+                  return(
+                   <Fragment key={index}>
+                      <AddTodo index={index} placeholder='Add new todo...' onAdd={todos.createTodo} />
+                      <TodoList index={index}  items={list} toggleComplete={todos.toggleComplete} />
+                   </Fragment>
+                  )
+                })
+                }
+             
               </TodosWrapper>
             )
           }}

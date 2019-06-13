@@ -1,7 +1,7 @@
 import { Container } from 'unstated'
 
 const defaultState = {
-  list: [
+  list: [[
     {
       id: 1,
       completed: false,
@@ -27,7 +27,7 @@ const defaultState = {
       completed: false,
       text: 'Optional: add tests'
     }
-  ]
+  ]]
 }
 
 class TodosContainer extends Container {
@@ -59,18 +59,24 @@ class TodosContainer extends Container {
     return this.state.list
   }
 
-  toggleComplete = async id => {
-    const item = this.state.list.find(i => i.id === id)
+  toggleComplete = async (id, listNumber) => {
+    const item = this.state.list[listNumber].find(i => i.id === id)
     const completed = !item.completed
 
     // We're using await on setState here because this comes from unstated package, not React
     // See: https://github.com/jamiebuilds/unstated#introducing-unstated
     await this.setState(state => {
-      const list = state.list.map(item => {
-        if (item.id !== id) return item
-        return {
-          ...item,
-          completed
+      const list = state.list.map((singleList, index) => {
+        if(listNumber == index ){
+          return singleList.map(item => {
+            if (item.id !== id) return item
+            return {
+              ...item,
+              completed
+            }
+          })
+        } else{
+           return singleList
         }
       })
       return { list }
@@ -79,20 +85,28 @@ class TodosContainer extends Container {
     this.syncStorage()
   }
 
-  createTodo = async text => {
+  createTodo = async (text, listNumber) => {
     await this.setState(state => {
       const item = {
         completed: false,
         text,
-        id: state.list.length + 1
+        id: state.list[listNumber].length + 1
       }
-
-      const list = state.list.concat(item)
-      return { list }
+      const list = state.list.map((l, index) => {
+          return listNumber == index ? l.concat(item) : l
+      })    
+      return  {list}
     })
 
     this.syncStorage()
   }
+
+
+  createList = async text => {
+    console.log(text, 'text');
+  }
+
 }
+
 
 export default TodosContainer
