@@ -1,12 +1,12 @@
 import { Container } from 'unstated'
+import { SIGILL } from 'constants';
 
 const defaultState = {
-  list: [[
-    {
+  list: [
+    {name:'First List', todos:[{
       id: 1,
       completed: false,
-      text: 'Read README'
-    },
+      text: 'Read README'},
     {
       id: 2,
       completed: false,
@@ -27,7 +27,8 @@ const defaultState = {
       completed: false,
       text: 'Optional: add tests'
     }
-  ]]
+  ]}
+]
 }
 
 class TodosContainer extends Container {
@@ -60,7 +61,7 @@ class TodosContainer extends Container {
   }
 
   toggleComplete = async (id, listNumber) => {
-    const item = this.state.list[listNumber].find(i => i.id === id)
+    const item = this.state.list[listNumber].todos.find(i => i.id === id)
     const completed = !item.completed
 
     // We're using await on setState here because this comes from unstated package, not React
@@ -68,13 +69,16 @@ class TodosContainer extends Container {
     await this.setState(state => {
       const list = state.list.map((singleList, index) => {
         if(listNumber == index ){
-          return singleList.map(item => {
+          const {todos} = singleList;
+           const newTodos = todos.map(item => {
             if (item.id !== id) return item
             return {
               ...item,
               completed
             }
           })
+          singleList.todos = newTodos;
+          return singleList;
         } else{
            return singleList
         }
@@ -90,10 +94,17 @@ class TodosContainer extends Container {
       const item = {
         completed: false,
         text,
-        id: state.list[listNumber].length + 1
+        id: state.list[listNumber].todos.length + 1
       }
       const list = state.list.map((l, index) => {
-          return listNumber == index ? l.concat(item) : l
+        if(listNumber !== index){
+          return l;
+        } else{
+          const { todos } = l;
+          let newTodos = todos.concat(item);
+          l.todos = newTodos;
+          return l;
+        }
       })    
       return  {list}
     })
@@ -103,6 +114,19 @@ class TodosContainer extends Container {
 
 
   createList = async text => {
+    await this.setState(state => {
+      const addList = {
+        name: text,
+        todos: []
+      };
+      const list = [...state.list, addList]; 
+      // const list = state.list.map((l, index) => {
+      //     return listNumber == index ? l.concat(item) : l
+      // })    
+      return  {list}
+    })
+
+    this.syncStorage()
     console.log(text, 'text');
   }
 

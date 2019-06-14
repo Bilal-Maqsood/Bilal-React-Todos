@@ -23,7 +23,7 @@ function App () {
                   return(
                    <Fragment key={index}>
                       <AddTodo index={index} placeholder='Add new todo...' onAdd={todos.createTodo} />
-                      <TodoList index={index}  items={list} toggleComplete={todos.toggleComplete} />
+                      <TodoList index={index} name={list.name} items={list.todos} toggleComplete={todos.toggleComplete} />
                    </Fragment>
                   )
                 })

@@ -4,8 +4,9 @@ import styled from 'styled-components'
 
 import TodoItem from './TodoItem'
 
-const TodoList = ({ items, toggleComplete, index }) => (
+const TodoList = ({ items, toggleComplete, index, name }) => (
   <Wrapper>
+    <div>{name}</div>
     {items.map(item => {
       const onComplete = e => {
         toggleComplete(item.id, index )
