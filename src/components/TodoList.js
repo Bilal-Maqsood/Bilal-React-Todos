@@ -10,7 +10,8 @@ class TodoList extends React.Component {
     super(props);
     this.state = {
       filter: 'all',
-      filteredItems: []
+      filteredItems: [],
+      items: []
     }
 
   }
@@ -44,22 +45,37 @@ class TodoList extends React.Component {
     })
   }
 
+  static getDerivedStateFromProps(nextProps) {
+    return {
+      items: nextProps.items,
+    };
+  }
+
+  componentDidUpdate(prevState){
+     if(prevState.items !== this.state.items){
+       this.getFilteredItems()
+     }
+  }
+
   render(){
-    console.log(this.state.filteredData , 'it');
-    const {toggleComplete, index, name} = this.props;
+    const {toggleComplete, index} = this.props;
     const {filteredItems} = this.state;
     return(
       <Wrapper>
-      <div>{name}</div>
-      <label>
-            Filter by:
-            <select value={this.state.value} onChange={this.handleChange}>
-              <option value="all">All</option>
-              <option value="completed">Completed</option>
-              <option value="active">Active</option>
-            </select>
-          </label>
-   
+          <div className='row'>
+          <div className="col-md-6">
+            <p>
+              Filter by:
+            </p>
+            </div>
+            <div className='col-md-6'>
+              <select className='filter-dropdown' value={this.state.value} onChange={this.handleChange}>
+                <option value="all">All</option>
+                <option value="completed">Completed</option>
+                <option value="active">Active</option>
+              </select>
+            </div>
+            </div>
       {filteredItems.map(item => {
         const onComplete = e => {
           toggleComplete(item.id, index )
@@ -68,10 +84,8 @@ class TodoList extends React.Component {
         return <TodoItem key={item.id} {...item} onComplete={onComplete} />
       })}
     </Wrapper>
-
     )
   }
-
 }
 
 const Wrapper = styled.div`

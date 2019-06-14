@@ -1,5 +1,5 @@
-import React, {Fragment } from 'react'
-import { Provider, Subscribe } from 'unstated'
+import React, { Fragment } from 'react'
+import { Provider, Subscribe, Container } from 'unstated'
 
 import styled from 'styled-components'
 
@@ -8,28 +8,38 @@ import TodosContainer from './store'
 import TodoList from './components/TodoList'
 import AddTodo from './components/AddTodo'
 
-function App () {
+function App() {
   return (
     <Provider>
       <Wrapper>
         <Subscribe to={[TodosContainer]}>
           {todos => {
-            console.log(todos, 'todos');
             const lists = todos.getList()
             return (
-              <TodosWrapper>
-                <AddTodo placeholder='Add new list...' onAdd={todos.createList} />
-                { lists.map((list, index) =>{
-                  return(
-                   <Fragment key={index}>
-                      <AddTodo index={index} placeholder='Add new todo...' onAdd={todos.createTodo} />
-                      <TodoList index={index} name={list.name} items={list.todos} toggleComplete={todos.toggleComplete} />
-                   </Fragment>
-                  )
-                })
-                }
-             
-              </TodosWrapper>
+              <div>
+                <RowWrapper>
+                  <label>Add Todos List</label>
+                  <div className='row'>
+                    <div className='col-md-4 add-list'>
+                      <AddTodo placeholder='Type Name and Enter' onAdd={todos.createList} />
+                    </div>
+                  </div>
+                </RowWrapper>
+                <div className="container">
+                  <div className="row">
+                    {lists.map((list, index) => {
+                      return (
+                        <div className="col-md-6" key={index}>
+                          <Title>{list.name}</Title>
+                          <AddTodo index={index} placeholder='Add new todo...' onAdd={todos.createTodo} />
+                          <TodoList index={index} items={list.todos} toggleComplete={todos.toggleComplete} />
+                        </div>
+                      )
+                    })
+                    }
+                  </div>
+                </div>
+              </div>
             )
           }}
         </Subscribe>
@@ -47,12 +57,16 @@ const Wrapper = styled.div`
   justify-content: center;
   font-size: 24px;
   color: white;
+
+`
+const Title = styled.div`
+  font-size: 26px;
+  padding-bottom: 20px;
 `
 
-const TodosWrapper = styled.div`
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
+const RowWrapper = styled.div`
+  margin-top: 50px;
+  margin-bottom: 10px;
 `
 
 export default App
